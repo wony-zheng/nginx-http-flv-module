@@ -1009,8 +1009,10 @@ ngx_http_flv_live_join(ngx_rtmp_session_t *s, u_char *name,
     ngx_rtmp_live_ctx_t            *ctx;
     ngx_rtmp_live_stream_t        **stream;
     ngx_rtmp_live_app_conf_t       *lacf;
-
+	ngx_http_request_t			   *r;
     ngx_rtmp_relay_app_conf_t      *racf;
+
+	r = s->data;
 
     /* only for subscribers */
     if (publisher) {
@@ -1024,9 +1026,9 @@ ngx_http_flv_live_join(ngx_rtmp_session_t *s, u_char *name,
 
     ctx = ngx_rtmp_get_module_ctx(s, ngx_rtmp_live_module);
     if (ctx && ctx->stream) {
-        ngx_log_debug0(NGX_LOG_DEBUG_RTMP, s->connection->log, 0,
-                "flv live: already joined");
-
+        ngx_log_debug1(NGX_LOG_DEBUG_RTMP, s->connection->log, 0,
+                "flv live: already joined, keepalive: %i", r->keepalive);
+		r->keepalive = 0;
         return NGX_DECLINED;
     }
 
